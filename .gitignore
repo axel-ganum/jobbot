@@ -1,0 +1,16 @@
+# Node modules
+node_modules/
+
+# Archivos de entorno
+.env
+
+# Archivos generados por Puppeteer / Render
+*.log
+
+# Carpeta de datos que contiene CV y ofertas enviadas (si no querés subirlos)
+src/data/*.json
+
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
