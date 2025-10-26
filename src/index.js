@@ -41,8 +41,33 @@ async function runBot() {
     if (count >= 3) break; // solo 3 por día
 
     const title = oferta.title.toLowerCase();
-    if (!title.includes("remoto")) continue;
-    if (!title.includes("junior") && !title.includes("trainee")) continue;
+   if (!title.includes("remoto")) continue;
+
+// Filtrar por nivel
+if (!title.includes("junior") && !title.includes("trainee")) continue;
+
+// Filtrar por tecnologías que dominás
+const tecnologias = [
+  "javascript",
+  "typescript",
+  "react",
+  "next",
+  "node",
+  "nestjs",
+  "express",
+  "bootstrap",
+  "tailwind"
+];
+
+const descripcionMin = description.toLowerCase();
+const tieneTecnologia = tecnologias.some((tech) =>
+  title.includes(tech) || descripcionMin.includes(tech)
+);
+
+if (!tieneTecnologia) {
+  console.log(`⚠️ Omitiendo oferta sin tecnologías relevantes: ${oferta.title}`);
+  continue;
+}
 
     const id = oferta.link;
     if (yaPostulado(id)) continue;
