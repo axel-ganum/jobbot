@@ -1,6 +1,15 @@
 import fs from "fs";
+import path from "path";
 
-const FILE = "./data/enviados.json";
+
+// Ruta absoluta al archivo de enviados
+const FILE = path.resolve("./data/enviados.json");
+
+// Crear carpeta y archivo si no existen
+const dir = path.dirname(FILE);
+if (!fs.existsSync(dir)) {
+  fs.mkdirSync(dir, { recursive: true });
+}
 
 // Crea el archivo si no existe
 if (!fs.existsSync(FILE)) {
