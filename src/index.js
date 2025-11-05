@@ -4,6 +4,8 @@ import cron from "node-cron";
 import fs from "fs";
 import { generarCarta } from "./utils/generator.js";
 import { yaPostulado, marcarPostulado, limpiarOfertasViejas } from "./utils/storage.js";
+import nodemailer from "nodemailer";
+
 
 dotenv.config();
 
@@ -26,6 +28,8 @@ cron.schedule("0 12 * * *", () => {
 runBot(); // para correrlo manualmente también
 
 async function runBot() {
+  const postuladasHoy = [];
+  
   const browser = await chromium.launchPersistentContext(
     "./perfil-computrabajo", // 📁 cookies/sesión se guardan acá
     {
@@ -143,12 +147,14 @@ async function runBot() {
 
       marcarPostulado(id);
       count++;
+      
+      postuladasHoy.push(oferta);
       await page.waitForTimeout(5000);
     } catch (err) {
       console.error("❌ Error al postular:", err.message);
     }
   }
-
+  await enviarNotificacion(postuladasHoy);
   await browser.close();
   console.log(`🎯 Proceso completado. Postulaciones: ${count}`);
 }
@@ -190,3 +196,34 @@ async function autoScroll(page) {
     });
   });
 }
+
+async function enviarNotificacion(postuladas) {
+  if (!postuladas.length) return;
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const cuerpo = postuladas
+    .map(p => `• ${p.title}\n${p.link}`)
+    .join("\n\n");
+
+  const mailOptions = {
+    from: `"Bot Computrabajo 🤖" <${process.env.EMAIL_USER}>`,
+    to: process.env.EMAIL_TO,
+    subject: `📩 ${postuladas.length} nuevas postulaciones enviadas`,
+    text: `Estas son las ofertas a las que el bot se postuló hoy:\n\n${cuerpo}`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("📧 Email de notificación enviado correctamente.");
+  } catch (err) {
+    console.error("❌ Error al enviar email:", err.message);
+  }
+}
+
