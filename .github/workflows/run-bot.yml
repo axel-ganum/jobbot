@@ -1,0 +1,25 @@
+name: Ejecutar bot Computrabajo
+
+on:
+  schedule:
+    - cron: "0 12 * * *"  # Corre todos los días a las 9:00 AM Argentina (UTC-3)
+  workflow_dispatch:       # Permite ejecutarlo manualmente
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Ejecutar el bot
+        run: node index.js
