@@ -33,7 +33,7 @@ async function runBot() {
   const browser = await chromium.launchPersistentContext(
     "./perfil-computrabajo", // 📁 cookies/sesión se guardan acá
     {
-      headless: false, // podés poner true en servidor
+      headless: true, // podés poner true en servidor
       slowMo: 50,
     }
   );
