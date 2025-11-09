@@ -21,5 +21,8 @@ jobs:
       - name: Instalar dependencias
         run: npm install
 
+      - name: Instalar navegadores de Playwright
+        run: npx playwright install --with-deps
+
       - name: Ejecutar el bot
         run: node src/index.js
